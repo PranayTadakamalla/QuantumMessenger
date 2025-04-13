@@ -39,6 +39,13 @@ interface AdminDataUpdateMessage extends BaseMessage {
   timestamp: string;
 }
 
+interface TypingIndicatorMessage extends BaseMessage {
+  type: 'typing';
+  senderId: number;
+  receiverId: number;
+  isTyping: boolean;
+}
+
 // Map to store connected clients and their user IDs
 const clients = new Map<WebSocket, number>();
 
@@ -59,6 +66,10 @@ export function setupWebSocketServer(server: Server) {
             
           case 'message':
             await handleChatMessage(ws, data as ChatMessage);
+            break;
+            
+          case 'typing':
+            handleTypingIndicator(ws, data as TypingIndicatorMessage);
             break;
             
           default:
@@ -172,6 +183,28 @@ async function handleChatMessage(ws: WebSocket, data: ChatMessage) {
     }
   } catch (error) {
     console.error('Error handling chat message:', error);
+  }
+}
+
+// Handle typing indicator messages
+function handleTypingIndicator(ws: WebSocket, data: TypingIndicatorMessage) {
+  const { senderId, receiverId, isTyping } = data;
+  
+  // Verify the sender is the authenticated user
+  const authenticatedUserId = clients.get(ws);
+  if (authenticatedUserId !== senderId) {
+    console.warn('Typing indicator sender ID does not match authenticated user');
+    return;
+  }
+  
+  // Forward the typing indicator to the receiver if they're online
+  const receiverWs = findClientByUserId(receiverId);
+  if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
+    receiverWs.send(JSON.stringify({
+      type: 'typing',
+      senderId,
+      isTyping
+    }));
   }
 }
 

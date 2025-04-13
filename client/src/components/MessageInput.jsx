@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useChat } from "../contexts/ChatContext";
 import { useAuth } from "../contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,11 +7,37 @@ import { Paperclip, Send, Shield } from "lucide-react";
 
 export default function MessageInput({ selectedUser }) {
   const [message, setMessage] = useState("");
-  const { sendMessage, connected } = useChat();
+  const { sendMessage, connected, sendTypingIndicator } = useChat();
   const { currentUser } = useAuth();
+  const typingTimeoutRef = useRef(null);
+  const isTypingRef = useRef(false);
+  
+  // Cleanup typing indicator on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      
+      // If we were typing, send "stopped typing" signal
+      if (isTypingRef.current && selectedUser) {
+        sendTypingIndicator(false);
+      }
+    };
+  }, [selectedUser, sendTypingIndicator]);
   
   const handleSendMessage = () => {
     if (!message.trim() || !selectedUser || !currentUser || !connected) return;
+    
+    // When sending a message, also clear the typing indicator
+    if (isTypingRef.current) {
+      sendTypingIndicator(false);
+      isTypingRef.current = false;
+      
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    }
     
     sendMessage(message.trim());
     setMessage("");
@@ -21,6 +47,42 @@ export default function MessageInput({ selectedUser }) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+  
+  const handleTyping = (e) => {
+    const value = e.target.value;
+    setMessage(value);
+    
+    if (selectedUser && connected) {
+      // If we're not already marked as typing, send typing indicator
+      if (!isTypingRef.current && value.trim().length > 0) {
+        sendTypingIndicator(true);
+        isTypingRef.current = true;
+      }
+      
+      // Clear any existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      
+      // Set a timeout to send "stopped typing" after 2 seconds of inactivity
+      typingTimeoutRef.current = setTimeout(() => {
+        if (isTypingRef.current) {
+          sendTypingIndicator(false);
+          isTypingRef.current = false;
+        }
+      }, 2000);
+      
+      // If message is empty, immediately stop typing indicator
+      if (value.trim().length === 0 && isTypingRef.current) {
+        sendTypingIndicator(false);
+        isTypingRef.current = false;
+        
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+      }
     }
   };
   

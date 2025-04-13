@@ -11,6 +11,7 @@ export function ChatProvider({ children }) {
   const [messages, setMessages] = useState({});
   const [selectedUser, setSelectedUser] = useState(null);
   const [isRefreshingKeys, setIsRefreshingKeys] = useState(false);
+  const [typingUsers, setTypingUsers] = useState({});
   const { currentUser } = useAuth();
   const { toast } = useToast();
 
@@ -66,6 +67,10 @@ export function ChatProvider({ children }) {
         
         case "key_refresh":
           handleKeyRefresh(data);
+          break;
+          
+        case "typing":
+          handleTypingIndicator(data);
           break;
           
         default:
@@ -242,6 +247,41 @@ export function ChatProvider({ children }) {
     });
   }, [toast]);
 
+  const handleTypingIndicator = useCallback((data) => {
+    const { senderId, isTyping } = data;
+    
+    setTypingUsers(prev => ({
+      ...prev,
+      [senderId]: isTyping
+    }));
+    
+    // Auto-clear typing indicator after 3 seconds if isTyping is true
+    // This is a fallback in case the "stopped typing" message is lost
+    if (isTyping) {
+      setTimeout(() => {
+        setTypingUsers(prev => ({
+          ...prev,
+          [senderId]: false
+        }));
+      }, 3000);
+    }
+  }, []);
+
+  const sendTypingIndicator = useCallback((isTyping) => {
+    if (!socket || !selectedUser || socket.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    const typingData = {
+      type: "typing",
+      senderId: currentUser.id,
+      receiverId: selectedUser.id,
+      isTyping
+    };
+
+    socket.send(JSON.stringify(typingData));
+  }, [socket, selectedUser, currentUser]);
+
   const value = {
     users,
     messages,
@@ -250,7 +290,9 @@ export function ChatProvider({ children }) {
     connected,
     sendMessage,
     refreshKeys,
-    isRefreshingKeys
+    isRefreshingKeys,
+    typingUsers,
+    sendTypingIndicator
   };
 
   return (
