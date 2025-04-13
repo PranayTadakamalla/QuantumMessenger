@@ -1,0 +1,113 @@
+/* Global styles for the Quantum Chat application */
+
+/* Quantum gradient background */
+.bg-quantum-gradient {
+  background: linear-gradient(135deg, #3949AB 0%, #7C4DFF 100%);
+}
+
+/* Chat bubbles */
+.chat-bubble-user {
+  position: relative;
+  border-radius: 1rem 1rem 0 1rem;
+}
+
+.chat-bubble-other {
+  position: relative;
+  border-radius: 1rem 1rem 1rem 0;
+}
+
+/* Quantum glow effect */
+.quantum-glow {
+  box-shadow: 0 0 15px rgba(124, 77, 255, 0.3);
+}
+
+/* Animation for the key refresh modal */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Custom colors */
+:root {
+  --accent-light: #B388FF;
+  --accent-main: #7C4DFF;
+  --accent-dark: #651FFF;
+  --quantum-light: #D1C4E9;
+  --quantum-main: #7E57C2;
+  --quantum-dark: #5E35B1;
+  --success: #4CAF50;
+  --error: #F44336;
+  --warning: #FFC107;
+  --dark: #212121;
+}
+
+/* Font definitions */
+.font-display {
+  font-family: 'Poppins', sans-serif;
+}
+
+.font-mono {
+  font-family: 'Roboto Mono', monospace;
+}
+
+/* Status indicators */
+.bg-success {
+  background-color: var(--success);
+}
+
+.text-success {
+  color: var(--success);
+}
+
+.bg-error {
+  background-color: var(--error);
+}
+
+.text-error {
+  color: var(--error);
+}
+
+.bg-warning {
+  background-color: var(--warning);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+/* Background colors */
+.bg-dark {
+  background-color: var(--dark);
+}
+
+.bg-quantum-light {
+  background-color: var(--quantum-light);
+}
+
+.bg-quantum-main {
+  background-color: var(--quantum-main);
+}
+
+.bg-quantum-dark {
+  background-color: var(--quantum-dark);
+}
+
+.text-quantum-dark {
+  color: var(--quantum-dark);
+}
+
+.bg-accent-light {
+  background-color: var(--accent-light);
+}
+
+.text-accent-dark {
+  color: var(--accent-dark);
+}
