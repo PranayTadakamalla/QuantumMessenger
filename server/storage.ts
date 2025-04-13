@@ -1,5 +1,6 @@
 import { users, messages, authLogs, keyRefreshLogs, messageLogs, intrusionLogs } from "@shared/schema";
 import type { User, InsertUser, Message, InsertMessage, AuthLog, InsertAuthLog, KeyRefreshLog, InsertKeyRefreshLog, MessageLog, InsertMessageLog, IntrusionLog, InsertIntrusionLog } from "@shared/schema";
+import { hash } from "./quantumBackend";
 
 // Interface for storage operations
 export interface IStorage {
@@ -70,16 +71,19 @@ export class MemStorage implements IStorage {
     this.intrusionLogIdCounter = 1;
     
     // Initialize with admin user
-    this.createUser({
-      username: "admin",
-      email: "admin@example.com",
-      password: "admin@1234"
-    }).then(user => {
-      // Set user as admin
-      this.users.set(user.id, {
-        ...user,
-        isAdmin: true
-      });
+    // We need to hash the password properly first
+    hash("admin@1234").then(hashedPassword => {
+      const adminUser = {
+        id: this.userIdCounter++,
+        username: "admin",
+        email: "admin@example.com",
+        password: hashedPassword,
+        isAdmin: true,
+        isOnline: false,
+        lastActive: new Date()
+      };
+      this.users.set(adminUser.id, adminUser);
+      console.log("Admin user created successfully");
     });
   }
 
