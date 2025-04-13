@@ -2,7 +2,34 @@
 
 /* Quantum gradient background */
 .bg-quantum-gradient {
-  background: linear-gradient(135deg, #3949AB 0%, #7C4DFF 100%);
+  background: linear-gradient(135deg, #4A148C 0%, #9C27B0 100%);
+}
+
+/* Button hover effects */
+.btn-hover-effect {
+  transition: all 0.3s ease;
+}
+
+.btn-hover-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+}
+
+/* Custom button styles */
+.btn-quantum {
+  background-color: var(--accent-main);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-quantum:hover {
+  background-color: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(124, 77, 255, 0.25);
 }
 
 /* Chat bubbles */
@@ -37,16 +64,19 @@
 
 /* Custom colors */
 :root {
-  --accent-light: #B388FF;
-  --accent-main: #7C4DFF;
-  --accent-dark: #651FFF;
-  --quantum-light: #D1C4E9;
-  --quantum-main: #7E57C2;
-  --quantum-dark: #5E35B1;
-  --success: #4CAF50;
-  --error: #F44336;
-  --warning: #FFC107;
-  --dark: #212121;
+  --accent-light: #CE93D8;
+  --accent-main: #9C27B0;
+  --accent-dark: #7B1FA2;
+  --quantum-light: #E1BEE7;
+  --quantum-main: #8E24AA;
+  --quantum-dark: #6A1B9A;
+  --success: #00C853;
+  --error: #FF1744;
+  --warning: #FFC400;
+  --dark: #1A1A1A;
+  --primary-light: #BB86FC;
+  --primary-main: #6200EE;
+  --primary-dark: #3700B3;
 }
 
 /* Font definitions */

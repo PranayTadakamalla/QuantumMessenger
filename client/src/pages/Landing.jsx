@@ -55,9 +55,11 @@ export default function Landing() {
                     Get Started
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg" className="flex items-center">
-                  <Play size={16} className="mr-2" /> How It Works
-                </Button>
+                <Link href="/login">
+                  <Button variant="outline" size="lg" className="flex items-center btn-hover-effect">
+                    <Shield size={16} className="mr-2" /> Login
+                  </Button>
+                </Link>
               </div>
             </div>
             <div className="lg:w-1/2 lg:pl-10">

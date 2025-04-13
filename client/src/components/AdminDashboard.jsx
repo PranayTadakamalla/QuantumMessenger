@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminStats from "./AdminStats";
 import AdminUserList from "./AdminUserList";
 import AdminLogs from "./AdminLogs";
 import AdminIntrusions from "./AdminIntrusions";
-import { DownloadCloud, Bell, Settings } from "lucide-react";
+import { DownloadCloud, Bell, Settings, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
   const [activeView, setActiveView] = useState("overview");
