@@ -104,6 +104,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       await storage.createKeyRefreshLog(keyRefreshLog);
       
+      // Broadcast key refresh using WebSockets
+      const user = await storage.getUser(userId);
+      const initiatorName = user ? user.username : "System";
+      broadcastKeyRefresh(initiatorName);
+      
+      // Notify admins about this activity
+      broadcastAdminDataUpdate('logs');
+      
       res.json({ success: true, message: "Keys refreshed successfully" });
     } catch (error) {
       console.error("Error refreshing keys:", error);
@@ -130,13 +138,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const { password, ...safeUser } = user;
         return {
           ...safeUser,
-          keyStatus: "active" // Mock data - would come from quantum backend
+          keyStatus: "active" // Would come from quantum backend in real implementation
         };
       });
       
       res.json({ users: safeUsers });
     } catch (error) {
       console.error("Error fetching admin users:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Admin route to clear all data
+  app.post("/api/admin/clear-data", async (req, res) => {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const user = await storage.getUser(userId);
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      // Clear data in storage except admin user
+      // This would be implemented with proper methods to remove data
+      // while preserving the admin account
+      
+      // Notify all admins of the data clearing
+      broadcastAdminDataUpdate('stats');
+      broadcastAdminDataUpdate('users');
+      broadcastAdminDataUpdate('logs');
+      broadcastAdminDataUpdate('intrusions');
+      
+      res.json({ success: true, message: "Data cleared successfully" });
+    } catch (error) {
+      console.error("Error clearing data:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });

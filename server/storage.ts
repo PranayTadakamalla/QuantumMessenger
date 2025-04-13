@@ -168,8 +168,11 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const log: AuthLog = {
       id,
-      ...logData,
-      timestamp: now
+      timestamp: now,
+      userId: logData.userId || null,
+      action: logData.action,
+      ipAddress: logData.ipAddress || null,
+      userAgent: logData.userAgent || null
     };
     this.authLogs.set(id, log);
     return log;
@@ -187,8 +190,10 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const log: KeyRefreshLog = {
       id,
-      ...logData,
-      timestamp: now
+      timestamp: now,
+      initiatedBy: logData.initiatedBy || null,
+      affectedUsers: logData.affectedUsers,
+      isSuccessful: logData.isSuccessful || false
     };
     this.keyRefreshLogs.set(id, log);
     return log;
@@ -213,8 +218,11 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const log: MessageLog = {
       id,
-      ...logData,
-      timestamp: now
+      timestamp: now,
+      senderId: logData.senderId || null,
+      receiverId: logData.receiverId || null,
+      messageId: logData.messageId || null,
+      action: logData.action
     };
     this.messageLogs.set(id, log);
     return log;
@@ -232,8 +240,11 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const log: IntrusionLog = {
       id,
-      ...logData,
       timestamp: now,
+      userId: logData.userId || null,
+      ipAddress: logData.ipAddress || null,
+      description: logData.description,
+      severity: logData.severity,
       isResolved: false
     };
     this.intrusionLogs.set(id, log);
