@@ -135,27 +135,26 @@ async function handleChatMessage(ws: WebSocket, data: ChatMessage) {
     // Update sender's last active time
     await storage.updateUserLastActive(senderId);
     
-    // Find the receiver's WebSocket if they're online
-    const receiverWs = findClientByUserId(receiverId);
+    // Decrypt the message for sending (in reality, this would be done on the client side)
+    const decryptedContent = await decryptMessage(encryptedContent);
     
-    if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
-      // Decrypt the message for sending (in reality, this would be done on the client side)
-      const decryptedContent = await decryptMessage(encryptedContent);
-      
-      // Send message to receiver
-      const messageToSend = {
-        type: 'message',
+    // Prepare the message object to send
+    const messageToSend = {
+      type: 'message',
+      senderId,
+      message: {
+        id: message.id,
+        content: decryptedContent,
         senderId,
-        message: {
-          id: message.id,
-          content: decryptedContent,
-          senderId,
-          receiverId,
-          timestamp: message.timestamp,
-          isEncrypted: true
-        }
-      };
-      
+        receiverId,
+        timestamp: message.timestamp,
+        isEncrypted: true
+      }
+    };
+    
+    // Send to the receiver if they're online
+    const receiverWs = findClientByUserId(receiverId);
+    if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
       receiverWs.send(JSON.stringify(messageToSend));
       
       // Update message log to delivered
@@ -165,6 +164,11 @@ async function handleChatMessage(ws: WebSocket, data: ChatMessage) {
         receiverId,
         action: 'delivered'
       });
+    }
+    
+    // Also send back to sender so they can see their message in the chat
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(messageToSend));
     }
   } catch (error) {
     console.error('Error handling chat message:', error);
