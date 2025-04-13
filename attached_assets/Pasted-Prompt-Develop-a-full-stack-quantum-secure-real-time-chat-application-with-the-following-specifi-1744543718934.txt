@@ -1,0 +1,114 @@
+Prompt:
+
+Develop a full-stack, quantum-secure, real-time chat application with the following specifications:
+
+Folder Structure
+The project must be divided into two main folders:
+
+client – Contains the frontend built only with ReactJS and plain JavaScript. Do not use TypeScript, .ts or .tsx files, Tailwind CSS, or Next.js.
+
+backend – Contains a pre-supplied Python backend that must be used without modifying its core functionality.
+
+Backend Requirements (backend)
+Do not alter the core quantum backend. It already includes:
+
+Quantum Key Distribution (QKD) for secure key exchange
+
+Quantum-safe encryption and decryption for messages
+
+Key refresh logic that reinitializes encryption keys for all users
+
+Machine learning-based intrusion detection (e.g., Isolation Forest)
+
+Real-time logging of events like registration, login, key refresh, and message exchanges
+
+Administrative analytics and monitoring interface that includes logs, anomalies, and key exchange tracking
+
+All real-time communication must use WebSocket (e.g., Flask-SocketIO).
+
+All other operations (authentication, key refresh, logs) must use REST APIs.
+
+The backend provides endpoints and sockets for:
+
+User registration and login
+
+Chat message handling with quantum encryption
+
+Online/offline user status tracking
+
+Quantum key refresh and secure redistribution
+
+Log and anomaly access for the admin dashboard
+
+Frontend Requirements (client)
+Use ReactJS and plain JavaScript only
+
+Use standard CSS or any modern CSS-in-JS solution
+
+Create a modern, responsive, and intuitive UI
+
+Pages:
+Landing Page:
+
+Describes the platform: secure real-time messaging using quantum cryptography and machine learning
+
+Highlights features: end-to-end encryption, QKD, key refresh, real-time anomaly detection
+
+Includes "Sign Up" and "Login" buttons
+
+Sign-Up Page:
+
+Inputs: Username, Email, Password
+
+On successful registration, automatically redirect to login
+
+Login Page:
+
+Inputs: Username, Password
+
+On successful login:
+
+Regular users are redirected to the chat interface
+
+Admin (username: admin, password: admin@1234) is redirected to the admin dashboard
+
+Main Chat Interface (for users):
+
+Left Sidebar: Displays all registered users (excluding admin), along with real-time online/offline status via WebSocket
+
+Center Panel: Private chat window where messages are encrypted and decrypted in real time via backend
+
+Top-Right Profile Menu: Shows logged-in username and logout button
+
+Key Refresh Button: Allows users to trigger a quantum key refresh which updates encryption keys across all sessions seamlessly
+
+Admin Dashboard:
+
+Only accessible to the admin user
+
+Displays:
+
+List of registered users
+
+Authentication logs
+
+Message logs
+
+Key refresh history
+
+Intrusion alerts flagged by the ML model
+
+Visual charts and graphs using a library like Chart.js or Recharts
+
+Filtering and search functionalities to monitor system activity
+
+General Guidelines
+Ensure all interactions are real-time and synchronized using WebSocket
+
+Follow security best practices for handling encryption keys, login sessions, and WebSocket channels
+
+The entire system must be scalable, modular, and maintainable
+
+Do not use API keys or external services that require authentication tokens
+
+The final product must deliver a seamless, quantum-secure, and real-time chat experience with a professional frontend and a secure, intelligent backend.
