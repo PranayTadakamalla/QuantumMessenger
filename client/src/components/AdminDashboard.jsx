@@ -3,15 +3,17 @@ import AdminStats from "./AdminStats";
 import AdminUserList from "./AdminUserList";
 import AdminLogs from "./AdminLogs";
 import AdminIntrusions from "./AdminIntrusions";
-import { DownloadCloud, Bell, Settings, RefreshCw } from "lucide-react";
+import { DownloadCloud, Bell, Settings, RefreshCw, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminDashboard() {
   const [activeView, setActiveView] = useState("overview");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { toast } = useToast();
+  const { logout } = useAuth();
   
   // Function to fetch and refresh all dashboard data
   const refreshData = () => {
@@ -136,6 +138,15 @@ export default function AdminDashboard() {
             onClick={exportData}
           >
             <DownloadCloud size={16} className="mr-1" /> Export Data
+          </Button>
+          <Separator orientation="vertical" className="h-6 mx-2" />
+          <Button 
+            size="sm" 
+            variant="destructive"
+            className="flex items-center btn-hover-effect"
+            onClick={logout}
+          >
+            <LogOut size={16} className="mr-1" /> Logout
           </Button>
         </div>
       </div>

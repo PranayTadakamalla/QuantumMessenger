@@ -64,19 +64,19 @@
 
 /* Custom colors */
 :root {
-  --accent-light: #CE93D8;
-  --accent-main: #9C27B0;
-  --accent-dark: #7B1FA2;
-  --quantum-light: #E1BEE7;
-  --quantum-main: #8E24AA;
-  --quantum-dark: #6A1B9A;
-  --success: #00C853;
-  --error: #FF1744;
-  --warning: #FFC400;
-  --dark: #1A1A1A;
-  --primary-light: #BB86FC;
-  --primary-main: #6200EE;
-  --primary-dark: #3700B3;
+  --accent-light: #80DEEA;
+  --accent-main: #00BCD4;
+  --accent-dark: #0097A7;
+  --quantum-light: #B2EBF2;
+  --quantum-main: #26C6DA;
+  --quantum-dark: #00ACC1;
+  --success: #00E676;
+  --error: #FF5252;
+  --warning: #FFD740;
+  --dark: #212121;
+  --primary-light: #4FC3F7;
+  --primary-main: #03A9F4;
+  --primary-dark: #0288D1;
 }
 
 /* Font definitions */
