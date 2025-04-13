@@ -33,6 +33,12 @@ interface KeyRefreshMessage extends BaseMessage {
   initiatedBy: string | null;
 }
 
+interface AdminDataUpdateMessage extends BaseMessage {
+  type: 'admin_data_update';
+  dataType: 'stats' | 'users' | 'logs' | 'intrusions';
+  timestamp: string;
+}
+
 // Map to store connected clients and their user IDs
 const clients = new Map<WebSocket, number>();
 
@@ -237,4 +243,46 @@ export async function broadcastKeyRefresh(initiatedBy: string | null) {
   };
   
   broadcastToAllClients(message);
+}
+
+// Broadcast admin data updates to all admin users
+export async function broadcastAdminDataUpdate(dataType: 'stats' | 'users' | 'logs' | 'intrusions') {
+  const message: AdminDataUpdateMessage = {
+    type: 'admin_data_update',
+    dataType,
+    timestamp: new Date().toISOString()
+  };
+  
+  // Find all admin users and send them the update
+  try {
+    const allUsers = await storage.getAllUsers();
+    const adminUsers = allUsers.filter(user => user.isAdmin);
+    
+    // For each admin user, find their connection and send the update
+    for (const adminUser of adminUsers) {
+      const adminWs = findClientByUserId(adminUser.id);
+      if (adminWs && adminWs.readyState === WebSocket.OPEN) {
+        adminWs.send(JSON.stringify(message));
+      }
+    }
+  } catch (error) {
+    console.error('Error broadcasting admin data update:', error);
+  }
+}
+
+// Broadcast to admin clients only
+export function broadcastToAdminClients(message: any) {
+  const messageStr = JSON.stringify(message);
+  
+  storage.getAllUsers().then(users => {
+    const adminIds = users.filter(user => user.isAdmin).map(admin => admin.id);
+    
+    clients.forEach((userId, ws) => {
+      if (ws.readyState === WebSocket.OPEN && adminIds.includes(userId)) {
+        ws.send(messageStr);
+      }
+    });
+  }).catch(error => {
+    console.error('Error broadcasting to admin clients:', error);
+  });
 }

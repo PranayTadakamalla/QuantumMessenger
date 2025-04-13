@@ -2,77 +2,52 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, RefreshCw, AlertTriangle, MessageCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminLogs() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { toast } = useToast();
+  
+  const fetchLogs = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/admin/logs/recent", {
+        credentials: "include"
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setLogs(data.logs || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch logs:", error);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+  
+  // Function to manually refresh logs
+  const refreshLogs = () => {
+    setIsRefreshing(true);
+    fetchLogs().then(() => {
+      toast({
+        title: "Logs refreshed",
+        description: "Activity logs have been updated with the latest data",
+        variant: "default",
+      });
+    });
+  };
   
   useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch("/api/admin/logs/recent", {
-          credentials: "include"
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          setLogs(data.logs || []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch logs:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
     fetchLogs();
     
-    // For demo purposes, use placeholder data if API fails
-    const timeout = setTimeout(() => {
-      if (loading) {
-        setLogs([
-          { 
-            id: 1, 
-            type: "auth", 
-            message: "Alice Smith logged in successfully", 
-            details: "via Web Client • 192.168.1.32", 
-            timestamp: new Date(Date.now() - 5 * 60000) 
-          },
-          { 
-            id: 2, 
-            type: "key_refresh", 
-            message: "Quantum key refresh for 24 active users", 
-            details: "Scheduled • BB84 Protocol", 
-            timestamp: new Date(Date.now() - 30 * 60000) 
-          },
-          { 
-            id: 3, 
-            type: "security", 
-            message: "Multiple failed login attempts detected", 
-            details: "IP 192.168.1.145 • User 'admin'", 
-            timestamp: new Date(Date.now() - 48 * 60000) 
-          },
-          { 
-            id: 4, 
-            type: "message", 
-            message: "High message volume between users", 
-            details: "253 messages in last 15 minutes", 
-            timestamp: new Date(Date.now() - 75 * 60000) 
-          },
-          { 
-            id: 5, 
-            type: "auth", 
-            message: "Bob Johnson logged in successfully", 
-            details: "via Mobile App • 192.168.1.105", 
-            timestamp: new Date(Date.now() - 90 * 60000) 
-          }
-        ]);
-        setLoading(false);
-      }
-    }, 2000);
+    // Setup interval for real-time updates
+    const refreshInterval = setInterval(fetchLogs, 30000); // refresh every 30 seconds
     
-    return () => clearTimeout(timeout);
+    return () => clearInterval(refreshInterval);
   }, []);
   
   const formatTime = (timestamp) => {
@@ -109,7 +84,18 @@ export default function AdminLogs() {
     <Card>
       <CardHeader className="flex-row flex items-center justify-between">
         <CardTitle>Recent Activity</CardTitle>
-        <Button variant="link" size="sm">View All</Button>
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={refreshLogs} 
+            disabled={isRefreshing}
+            className={`text-gray-600 hover:text-accent-main ${isRefreshing ? 'animate-spin' : ''}`}
+          >
+            <RefreshCw size={16} />
+          </Button>
+          <Button variant="link" size="sm">View All</Button>
+        </div>
       </CardHeader>
       
       <CardContent>

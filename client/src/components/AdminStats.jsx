@@ -7,7 +7,7 @@ export default function AdminStats() {
     activeUsers: { count: 0, total: 0, change: 0 },
     messages: { count: 0, avgPerHour: 0, change: 0 },
     keyRefreshes: { count: 0, lastRefresh: null, status: "stable" },
-    securityAlerts: { count: 0, high: 0, medium: 0, low: 0, change: "new" }
+    securityAlerts: { count: 0, high: 0, medium: 0, low: 0, change: "none" }
   });
   const [loading, setLoading] = useState(true);
   
@@ -32,20 +32,10 @@ export default function AdminStats() {
     
     fetchStats();
     
-    // For demo purposes, use placeholder data if API fails
-    const timeout = setTimeout(() => {
-      if (loading) {
-        setStats({
-          activeUsers: { count: 24, total: 52, change: 12 },
-          messages: { count: 1284, avgPerHour: 53, change: 8 },
-          keyRefreshes: { count: 32, lastRefresh: new Date(Date.now() - 12 * 60000), status: "stable" },
-          securityAlerts: { count: 3, high: 2, medium: 1, low: 0, change: "new" }
-        });
-        setLoading(false);
-      }
-    }, 2000);
+    // Setup interval for real-time updates
+    const refreshInterval = setInterval(fetchStats, 10000); // refresh every 10 seconds
     
-    return () => clearTimeout(timeout);
+    return () => clearInterval(refreshInterval);
   }, []);
   
   const getTimeAgo = (timestamp) => {

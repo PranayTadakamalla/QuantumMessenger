@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupWebSocketServer } from "./socket";
+import { setupWebSocketServer, broadcastAdminDataUpdate, broadcastKeyRefresh } from "./socket";
 import { setupAuthRoutes } from "./auth";
 import { setupQuantumBackend } from "./quantumBackend";
 import { z } from "zod";

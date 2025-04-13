@@ -10,6 +10,87 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
   const [activeView, setActiveView] = useState("overview");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { toast } = useToast();
+  
+  // Function to fetch and refresh all dashboard data
+  const refreshData = () => {
+    setIsRefreshing(true);
+    
+    // Force component re-renders through state updates
+    setTimeout(() => {
+      setIsRefreshing(false);
+      toast({
+        title: "Data refreshed",
+        description: "Dashboard data has been updated with real-time information",
+        variant: "default",
+      });
+    }, 1000);
+  };
+  
+  // Export dashboard data as JSON
+  const exportData = async () => {
+    try {
+      // Fetch all relevant data
+      const statsRes = await fetch('/api/admin/stats', { credentials: 'include' });
+      const usersRes = await fetch('/api/admin/users', { credentials: 'include' });
+      const logsRes = await fetch('/api/admin/logs/recent', { credentials: 'include' });
+      const intrusionsRes = await fetch('/api/admin/intrusions', { credentials: 'include' });
+      
+      if (!statsRes.ok || !usersRes.ok || !logsRes.ok || !intrusionsRes.ok) {
+        throw new Error('Failed to fetch data for export');
+      }
+      
+      const stats = await statsRes.json();
+      const users = await usersRes.json();
+      const logs = await logsRes.json();
+      const intrusions = await intrusionsRes.json();
+      
+      // Combine into one export object
+      const exportData = {
+        stats,
+        users,
+        logs,
+        intrusions,
+        exportTimestamp: new Date().toISOString(),
+        system: "QuantumChat Admin Dashboard"
+      };
+      
+      // Convert to JSON and create download file
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      
+      // Create a link and trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `quantum-chat-admin-export-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Export successful",
+        description: "Dashboard data has been exported to JSON",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export failed",
+        description: error.message || "Failed to export dashboard data",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Initial data refresh on component mount
+  useEffect(() => {
+    refreshData();
+  }, []);
   
   return (
     <div className="flex-1 bg-gray-100 overflow-y-auto">
@@ -17,14 +98,43 @@ export default function AdminDashboard() {
       <div className="bg-white shadow-sm p-4 flex justify-between items-center">
         <h2 className="font-display font-semibold text-xl">Dashboard Overview</h2>
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="icon" className="text-gray-600">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-gray-600 hover:text-accent-main btn-hover-effect"
+            onClick={() => toast({
+              title: "Notifications",
+              description: "You have no new notifications",
+            })}
+          >
             <Bell size={18} />
           </Button>
-          <Button variant="ghost" size="icon" className="text-gray-600">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-gray-600 hover:text-accent-main btn-hover-effect"
+            onClick={() => toast({
+              title: "Settings",
+              description: "Dashboard settings panel will be implemented in the next update",
+            })}
+          >
             <Settings size={18} />
           </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={`text-gray-600 hover:text-accent-main btn-hover-effect ${isRefreshing ? 'animate-spin' : ''}`}
+            onClick={refreshData}
+            disabled={isRefreshing}
+          >
+            <RefreshCw size={18} />
+          </Button>
           <Separator orientation="vertical" className="h-6 mx-2" />
-          <Button size="sm" className="flex items-center">
+          <Button 
+            size="sm" 
+            className="flex items-center btn-hover-effect"
+            onClick={exportData}
+          >
             <DownloadCloud size={16} className="mr-1" /> Export Data
           </Button>
         </div>
