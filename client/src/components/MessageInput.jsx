@@ -97,7 +97,7 @@ export default function MessageInput({ selectedUser }) {
             rows={1}
             placeholder="Type a quantum-secured message..."
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleTyping}
             onKeyDown={handleKeyPress}
             className="w-full focus:outline-none resize-none text-sm min-h-[40px] max-h-[120px]"
             disabled={!connected}

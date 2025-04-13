@@ -11,3 +11,44 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+@layer components {
+  .chat-bubble-user {
+    @apply rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-sm;
+  }
+  
+  .chat-bubble-other {
+    @apply rounded-tl-2xl rounded-tr-2xl rounded-bl-sm rounded-br-2xl;
+  }
+  
+  /* Typing indicator animation */
+  .typing-indicator {
+    @apply flex items-center space-x-1.5 px-1;
+  }
+  
+  .typing-indicator span {
+    @apply w-2 h-2 bg-gray-400 rounded-full inline-block opacity-60;
+    animation: typing-bubble 1.4s infinite ease-in-out both;
+  }
+  
+  .typing-indicator span:nth-child(1) {
+    animation-delay: 0s;
+  }
+  
+  .typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes typing-bubble {
+    0%, 80%, 100% {
+      transform: scale(0.6);
+    }
+    40% {
+      transform: scale(1);
+    }
+  }
+}

@@ -3,19 +3,20 @@ import { useChat } from "../contexts/ChatContext";
 import { useAuth } from "../contexts/AuthContext";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Phone, Video, Info, File, CheckCheck, Check, Shield } from "lucide-react";
+import { Phone, Video, Info, File, CheckCheck, Check, Shield, MessageSquare } from "lucide-react";
 
 export default function ChatWindow({ selectedUser }) {
-  const { messages } = useChat();
+  const { messages, typingUsers } = useChat();
   const { currentUser } = useAuth();
   const messagesEndRef = useRef(null);
   
   const userMessages = messages[selectedUser?.id] || [];
+  const isUserTyping = selectedUser ? typingUsers[selectedUser.id] : false;
   
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages change or typing status changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [userMessages]);
+  }, [userMessages, isUserTyping]);
   
   const getInitials = (username) => {
     if (!username) return "";
@@ -122,6 +123,27 @@ export default function ChatWindow({ selectedUser }) {
             );
           })
         )}
+        {/* Typing indicator */}
+        {isUserTyping && (
+          <div className="flex items-end">
+            <div className="flex flex-col space-y-0.5 max-w-xs md:max-w-md">
+              <div className="chat-bubble-other bg-gray-100 py-2 px-3 shadow-sm">
+                <div className="flex items-center">
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              </div>
+              <div className="ml-2 flex items-center text-xs text-gray-500">
+                <MessageSquare size={10} className="mr-1" />
+                <span>{selectedUser.username} is typing...</span>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div ref={messagesEndRef} />
       </div>
     </>
