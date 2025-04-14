@@ -97,8 +97,8 @@ export default function ChatWindow({ selectedUser }) {
               <div key={message.id || index} className={`flex items-end ${isUserMessage ? "justify-end" : ""}`}>
                 <div className={`flex flex-col space-y-0.5 max-w-xs md:max-w-md ${isUserMessage ? "items-end" : ""}`}>
                   <div className={isUserMessage 
-                    ? "chat-bubble-user bg-primary-600 text-white py-2 px-3 shadow-sm" 
-                    : "chat-bubble-other bg-white py-2 px-3 shadow-sm"
+                    ? "chat-bubble-user bg-primary-600 text-black py-2 px-3 shadow-sm" 
+                    : "chat-bubble-other bg-black py-2 px-3 shadow-sm"
                   }>
                     {message.content.startsWith("FILE:") ? (
                       <div className="flex items-center">
